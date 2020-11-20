@@ -1,7 +1,7 @@
 ### PDFINVERTER for macOS - darken (or lighten) a PDF
 
 PDFInverter (GUI and CLI) will create a new PDF at the specified
-location from a source PDF. All colors will be inverted as shown:
+location from a source PDF. All colors will be inverted:
 
 <img src="https://github.com/rootVIII/pdfinverter/blob/master/screenshots/inverted.png" alt="example1">
 
