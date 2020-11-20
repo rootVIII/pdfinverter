@@ -111,7 +111,7 @@ func (g GUI) shouldExecute() error {
 	return nil
 }
 
-// ClearStatus is a QTimer function that periodically
+// ClearStatus is a QTimer function that periodically clears any status message.
 func (g *GUI) ClearStatus() {
 	if g.StatusCount > 4 {
 		g.StatusLabel.SetText("")
