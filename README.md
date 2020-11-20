@@ -9,6 +9,9 @@ location from a source PDF. All colors will be inverted as shown:
 Unfortunately page links are not preserved.
 
 
+A 2-3 page pdf will invert very quickly. However a 400 page PDF may take 3-4 minutes.
+
+
 A small/simple Python script is used (instead of ImageMagick) for creating the output PDF after editing. It uses the system's Python2 interpreter with NSImage/Quartz libs. This may cause the Python launcher to open in the Dock while the program is running.
 
 The GUI is developed with Golang QT bindings:
