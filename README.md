@@ -23,7 +23,7 @@ go get github.com/rootVIII/pdfinverter
 </pre>
 
 
-###### Command-line Usage:
+###### command-line usage:
 <pre>
   <code>
 # Required
