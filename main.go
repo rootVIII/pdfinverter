@@ -70,7 +70,7 @@ func run() {
 }
 
 func main() {
-	// Use system python2.7 until Apple includes Python3.
+	// Use system python2.7 until Apple includes NSImage/Quartz with Python3.
 	if _, err := exec.LookPath("python"); err != nil {
 		panic("System python not found")
 	}
