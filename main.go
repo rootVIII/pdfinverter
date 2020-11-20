@@ -43,7 +43,7 @@ func runCLI(tmpDir string) {
 	cliInit.RunApp()
 }
 
-// GUI runs the program with a TK front-end..
+// GUI runs the program with a QT front-end..
 func runGUI(tmpDir string) {
 
 	var guiInit AppInitializer
