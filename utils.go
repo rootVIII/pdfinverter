@@ -68,6 +68,22 @@ func ExitErr(reason error) {
 	os.Exit(1)
 }
 
+// Chunk breaks a slice of file names into evenly sized slices.
+func Chunk(fileNames []os.FileInfo) [][]string {
+	chunked := [][]string{}
+	index, chunkSize := 0, 100
+
+	for i := 0; i < len(fileNames)/chunkSize+1; i++ {
+		section := make([]string, chunkSize)
+		for j := 0; j < chunkSize && index < len(fileNames); j++ {
+			section[j] = fileNames[index].Name()
+			index++
+		}
+		chunked = append(chunked, section)
+	}
+	return chunked
+}
+
 // GetPDFConv returns Python code used as a utility shell script.
 func GetPDFConv() []byte {
 	script := []byte(`

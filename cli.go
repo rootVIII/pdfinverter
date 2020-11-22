@@ -15,20 +15,24 @@ type CLI struct {
 // RunApp inverts a pdf based on cmd-line arguments.
 func (cli *CLI) RunApp() {
 	cli.ExtractImage()
-
-	ch := make(chan struct{})
-
 	files, _ := ioutil.ReadDir(cli.TmpDir)
-	for _, file := range files {
-		if !strings.Contains(file.Name(), "out-") {
-			continue
+	for _, batch := range Chunk(files) {
+		ch := make(chan struct{})
+		routines := 0
+		for _, fileName := range batch {
+			if !strings.Contains(fileName, "out-") {
+				continue
+			}
+			go cli.ImageRoutine(fileName, ch)
+			cli.ImgCount++
+			routines++
 		}
-		cli.ImgCount++
-		go cli.ImageRoutine(file.Name(), ch)
+		for i := 0; i < routines; i++ {
+			<-ch
+		}
+		routines = 0
 	}
 
-	for i := 0; i < cli.ImgCount; i++ {
-		<-ch
-	}
 	cli.WritePDF()
+
 }

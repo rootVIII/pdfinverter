@@ -163,22 +163,25 @@ func (g *GUI) RunApp() {
 				time.Sleep(time.Millisecond * 500)
 			} else {
 				g.ExtractImage()
-				ch := make(chan struct{})
 				files, _ := ioutil.ReadDir(g.TmpDir)
-				for _, file := range files {
-					if !strings.Contains(file.Name(), "out-") {
-						continue
+				for _, batch := range Chunk(files) {
+					ch := make(chan struct{})
+					routines := 0
+					for _, fileName := range batch {
+						if !strings.Contains(fileName, "out-") {
+							continue
+						}
+						go g.ImageRoutine(fileName, ch)
+						g.ImgCount++
+						routines++
 					}
-					g.ImgCount++
-					go g.ImageRoutine(file.Name(), ch)
-				}
-
-				for i := 0; i < g.ImgCount; i++ {
-					<-ch
+					for i := 0; i < routines; i++ {
+						<-ch
+					}
+					routines = 0
 				}
 
 				g.WritePDF()
-				g.ImgCount = 0
 				g.StatusLabel.SetText(fmt.Sprintf("%s created", filepath.Base(g.PDFOut)))
 				g.Reset()
 				g.RemovePNGs()
