@@ -38,7 +38,8 @@ Note:  If no command line arguments are provided, the GUI version will open.
 </pre>
 
 
-A signed/notarized .pkg installer for macOS may also be downloaded from the <a href="https://github.com/rootVIII/pdfinverter/releases">releases</a> page.
+A signed/notarized .pkg installer for macOS may also be downloaded from the <a href="https://github.com/rootVIII/pdfinverter/releases">releases</a> page. Note that the binary was built on
+an Intel based Mac; I have no idea if it will run with the new M1 processor.
 
 
 <hr>
