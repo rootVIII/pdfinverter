@@ -40,5 +40,8 @@ Note:  If no command line arguments are provided, the GUI version will open.
 </pre>
 
 
+A notarized installer .pkg is also available in the <a href="https://github.com/rootVIII/pdfinverter/releases">releases</a> page.
+
+
 <hr>
 This project was developed on macOS Big Sur 11.0.1
