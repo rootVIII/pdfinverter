@@ -38,6 +38,5 @@ Note:  If no command line arguments are provided, the GUI version will open.
 </pre>
 
 
-
 <hr>
 This project was developed on macOS Big Sur 11.0.1
