@@ -3,9 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"os"
 	"os/exec"
-	"time"
+	"path/filepath"
+
+	"github.com/google/uuid"
 )
 
 // AppInitializer provides an interface to the CLI and GUI types.
@@ -17,62 +21,73 @@ type AppInitializer interface {
 	RunApp()
 }
 
-// CLI is the entry point to the cmd-line version.
-func runCLI(tmpDir string) {
+// RunCLI is the entry point to the cmd-line version.
+func RunCLI(tmpDir string, pngtopdf string) {
 	inputFile := flag.String("i", "", "input file path")
 	outputFile := flag.String("o", "", "output file path")
 	flag.Parse()
 	if len(*inputFile) < 1 || len(*outputFile) < 1 {
-		ExitErr(fmt.Errorf("-i <intput PDF path> -o <output PDF path> are required"))
-		if _, err := os.Stat(*inputFile); err != nil {
-			ExitErr(fmt.Errorf("invalid file path provided for -i <input>"))
+		fmt.Println("-i <intput PDF path> -o <output PDF path> are required")
+	} else if _, err := os.Stat(*inputFile); err != nil {
+		fmt.Println("invalid file path provided for -i <input>")
+	} else {
+		var cliInit AppInitializer
+		cliInit = &CLI{
+			PDFInverter: PDFInverter{
+				TmpDir:     tmpDir,
+				PDFIn:      *inputFile,
+				PDFOut:     *outputFile,
+				PyPNGToPDF: pngtopdf,
+				ImgCount:   0,
+			},
 		}
+		cliInit.RunApp()
 	}
-
-	var cliInit AppInitializer
-	cliInit = &CLI{
-		PDFInverter: PDFInverter{
-			TmpDir:   tmpDir,
-			PDFIn:    *inputFile,
-			PDFOut:   *outputFile,
-			ImgCount: 0,
-		},
-	}
-
-	defer os.RemoveAll(tmpDir)
-	cliInit.RunApp()
 }
 
-// GUI runs the program with a QT front-end..
-func runGUI(tmpDir string) {
+// RunGUI runs the program with a QT front-end..
+func RunGUI(tmpDir string, pngtopdf string) {
 
 	var guiInit AppInitializer
 	guiInit = &GUI{
 		PDFInverter: PDFInverter{
-			TmpDir:   tmpDir,
-			ImgCount: 0,
+			TmpDir:     tmpDir,
+			PyPNGToPDF: pngtopdf,
+			ImgCount:   0,
 		},
 	}
 	guiInit.RunApp()
-	os.RemoveAll(tmpDir)
-}
-
-func run() {
-	CleanDirs()
-	tmp := fmt.Sprintf("/var/tmp/invertpdf--%s/", time.Now().Format("20060102150405"))
-	os.Mkdir(tmp, 0700)
-	WriteText(tmp+"pngtopdf.py", GetPDFConv())
-	if len(os.Args) > 1 {
-		runCLI(tmp)
-	} else {
-		runGUI(tmp)
-	}
 }
 
 func main() {
 	// Use system python2.7 until Apple includes NSImage/Quartz with Python3.
 	if _, err := exec.LookPath("python"); err != nil {
-		panic("System python not found")
+		log.Fatal(fmt.Errorf("Failed to find system Python in path: %v", err))
 	}
-	run()
+
+	randPrefix, err := uuid.NewRandom()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	tmpdir, err := ioutil.TempDir("", randPrefix.String())
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer os.RemoveAll(tmpdir)
+
+	randFileName, err := uuid.NewRandom()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	pngtopdfTMP := filepath.Join(tmpdir, randFileName.String())
+	tmpdir += "/"
+	WriteText(pngtopdfTMP, GetPDFConv())
+
+	if len(os.Args) > 1 {
+		RunCLI(tmpdir, pngtopdfTMP)
+	} else {
+		RunGUI(tmpdir, pngtopdfTMP)
+	}
 }

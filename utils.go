@@ -2,12 +2,10 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"image"
 	"image/png"
 	"io/ioutil"
 	"os"
-	"strings"
 )
 
 // WritePNG writes an inverted PNG to disk.
@@ -15,11 +13,11 @@ func WritePNG(path string, newIMG image.Image) {
 	buf := &bytes.Buffer{}
 	err := png.Encode(buf, newIMG)
 	if err != nil {
-		ExitErr(err)
+		panic(err)
 	} else {
 		err = ioutil.WriteFile(path, buf.Bytes(), 0600)
 		if err != nil {
-			ExitErr(err)
+			panic(err)
 		}
 	}
 }
@@ -29,11 +27,11 @@ func ReadPNG(path string) image.Image {
 	imgRaw, err := os.Open(path)
 	defer imgRaw.Close()
 	if err != nil {
-		ExitErr(err)
+		panic(err)
 	}
 	imgDecoded, err := png.Decode(imgRaw)
 	if err != nil {
-		ExitErr(err)
+		panic(err)
 	}
 	return imgDecoded
 }
@@ -42,33 +40,12 @@ func ReadPNG(path string) image.Image {
 func WriteText(writePath string, text []byte) {
 	err := ioutil.WriteFile(writePath, text, 0700)
 	if err != nil {
-		ExitErr(err)
+		panic(err)
 	}
 }
 
-// CleanDirs deletes any previously existing invertpdf tmp directories
-// at application startup in case the previous execution exited early
-// from unknown/unplanned error.
-func CleanDirs() {
-	contents, err := ioutil.ReadDir("/var/tmp")
-	if err != nil {
-		ExitErr(fmt.Errorf("failed to access /var/tmp: %v", err))
-	}
-	for _, file := range contents {
-		if !strings.Contains(file.Name(), "invertpdf--") {
-			continue
-		}
-		_ = os.RemoveAll(fmt.Sprintf("/var/tmp/%s", file.Name()))
-	}
-}
-
-// ExitErr prints an err message and exits the application.
-func ExitErr(reason error) {
-	fmt.Printf("ERROR: %v\n", reason)
-	os.Exit(1)
-}
-
-// Chunk breaks a slice of file names into evenly sized slices.
+// Chunk breaks a slice of file names into evenly sized slices. The
+// final slice will contain the remaining filenames.
 func Chunk(fileNames []os.FileInfo) [][]string {
 	chunked := [][]string{}
 	index, chunkSize := 0, 100
