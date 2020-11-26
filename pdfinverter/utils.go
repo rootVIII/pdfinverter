@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-// WritePNG writes an inverted PNG to disk.
+// writePNG writes an inverted PNG to disk.
 func writePNG(path string, newIMG image.Image) {
 	buf := &bytes.Buffer{}
 	err := png.Encode(buf, newIMG)
@@ -22,7 +22,7 @@ func writePNG(path string, newIMG image.Image) {
 	}
 }
 
-// ReadPNG reads the image to be inverted.
+// readPNG reads the image to be inverted.
 func readPNG(path string) image.Image {
 	imgRaw, err := os.Open(path)
 	defer imgRaw.Close()
@@ -36,7 +36,7 @@ func readPNG(path string) image.Image {
 	return imgDecoded
 }
 
-// Chunk breaks a slice of file names into evenly sized slices. The
+// chunk breaks a slice of file names into evenly sized slices. The
 // final slice will contain the remaining filenames.
 func chunk(fileNames []os.FileInfo) [][]string {
 	chunked := [][]string{}
