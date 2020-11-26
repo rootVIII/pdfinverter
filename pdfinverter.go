@@ -15,8 +15,8 @@ import (
 
 // PDFInverter inherits all types and controls CLI application startup & processing.
 type PDFInverter struct {
-	TmpDir, PDFIn, PDFOut string
-	ImgCount              int
+	TmpDir, PyPNGToPDF, PDFIn, PDFOut string
+	ImgCount                          int
 	Executor
 }
 
@@ -30,7 +30,7 @@ func (p *PDFInverter) ImageRoutine(imgName string, fin chan<- struct{}) {
 func (p PDFInverter) ExtractImage() {
 	doc, err := fitz.New(p.PDFIn)
 	if err != nil {
-		ExitErr(err)
+		panic(err)
 	}
 
 	defer doc.Close()
@@ -38,7 +38,7 @@ func (p PDFInverter) ExtractImage() {
 	for pageCount := 0; pageCount < doc.NumPage(); pageCount++ {
 		currentImg, err := doc.Image(pageCount)
 		if err != nil {
-			ExitErr(err)
+			panic(err)
 		}
 		WritePNG(fmt.Sprintf("%sout-%06d.png", p.TmpDir, pageCount), currentImg)
 	}
@@ -79,11 +79,11 @@ func (p *PDFInverter) WritePDF() {
 		inputPath := fmt.Sprintf("%sout-%s%s.png", p.TmpDir, leadingZeroes, indexString)
 		paths = append(paths, inputPath)
 	}
-	cmd := fmt.Sprintf("/usr/bin/python %spngtopdf.py %s", p.TmpDir, strings.Join(paths, " "))
+	cmd := fmt.Sprintf("/usr/bin/python %s %s", p.PyPNGToPDF, strings.Join(paths, " "))
 	p.SetCommand(cmd)
 	p.RunCommand()
 	err := os.Rename(p.TmpDir+"aggr.pdf", p.PDFOut)
 	if err != nil {
-		ExitErr(err)
+		panic(err)
 	}
 }

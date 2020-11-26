@@ -19,7 +19,7 @@ func (ex *Executor) SetCommand(cmd string) {
 func (ex *Executor) RunCommand() {
 	cmd := exec.Command("/bin/sh", "-c", ex.command.String())
 	if err := cmd.Run(); err != nil {
-		ExitErr(err)
+		panic(err)
 	}
 	ex.command.Reset()
 }

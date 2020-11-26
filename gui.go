@@ -85,12 +85,12 @@ func (g *GUI) ResetGUI() {
 func (g *GUI) Reset() {
 	g.PDFIn = ""
 	g.PDFOut = ""
-	g.Window.SetWindowTitle("")
 	g.InputTextBox.SetText(g.PDFIn)
 	g.OutputTextBox.SetText(g.PDFOut)
 	g.ImgCount = 0
 	g.RunningJob = false
 	g.WorkingCount = 0
+	g.Window.SetWindowTitle("")
 }
 
 func (g GUI) shouldExecute() error {
@@ -191,7 +191,7 @@ func (g *GUI) RunApp() {
 
 	userInfo, err := user.Current()
 	if err != nil {
-		ExitErr(fmt.Errorf("Unable to extract username of current user"))
+		panic(fmt.Errorf("Unable to extract username of current user"))
 	}
 	g.UserInfo = userInfo
 	g.WorkingTitle = "working..."
