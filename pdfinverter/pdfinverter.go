@@ -26,7 +26,7 @@ type PDFInverter interface {
 type App struct {
 	TmpDir, PyPNGToPDF, PDFIn, PDFOut string
 	imgCount                          int
-	Executor
+	executor
 }
 
 // ImageRoutine inverts the image within a goroutine.
@@ -89,8 +89,8 @@ func (app *App) writePDF() {
 		paths = append(paths, inputPath)
 	}
 	cmd := fmt.Sprintf("/usr/bin/python %s %s", app.PyPNGToPDF, strings.Join(paths, " "))
-	app.SetCommand(cmd)
-	app.RunCommand()
+	app.setCommand(cmd)
+	app.runCommand()
 	err := os.Rename(app.TmpDir+"aggr.pdf", app.PDFOut)
 	if err != nil {
 		panic(err)
