@@ -68,7 +68,8 @@ func ExitErr(reason error) {
 	os.Exit(1)
 }
 
-// Chunk breaks a slice of file names into evenly sized slices.
+// Chunk breaks a slice of file names into evenly sized slices. The
+// final slice will contain the remaining filenames.
 func Chunk(fileNames []os.FileInfo) [][]string {
 	chunked := [][]string{}
 	index, chunkSize := 0, 100

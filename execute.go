@@ -5,7 +5,7 @@ import (
 	"os/exec"
 )
 
-// Executor visits my repositories.
+// Executor runs simple shell commands.
 type Executor struct {
 	command bytes.Buffer
 }
@@ -15,8 +15,7 @@ func (ex *Executor) SetCommand(cmd string) {
 	ex.command.WriteString(cmd)
 }
 
-// RunCommand executes the command stored
-// in the buffer and thenempties the buffer.
+// RunCommand executes the stored command before emptying the buffer.
 func (ex *Executor) RunCommand() {
 	cmd := exec.Command("/bin/sh", "-c", ex.command.String())
 	if err := cmd.Run(); err != nil {
