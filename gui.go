@@ -191,7 +191,7 @@ func (g *GUI) RunApp() {
 
 	userInfo, err := user.Current()
 	if err != nil {
-		panic(fmt.Errorf("Unable to extract username of current user"))
+		panic("Unable to extract username of current user")
 	}
 	g.UserInfo = userInfo
 	g.WorkingTitle = "working..."
