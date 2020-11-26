@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 
 	"github.com/google/uuid"
-	"github.com/rootVIII/pdfinverter/pdfinverter"
+	"github.com/rootVIII/pdfinverter/inverter"
 )
 
 // runCLI is the entry point to the cmd-line version.
@@ -24,9 +24,9 @@ func runCLI(tmpDir string, pngtopdf string) {
 	} else if _, err := os.Stat(*inputFile); err != nil {
 		fmt.Println("invalid file path provided for -i <input>")
 	} else {
-		var cliInit pdfinverter.PDFInverter
-		cliInit = &pdfinverter.CLI{
-			App: pdfinverter.App{
+		var cliInit inverter.PDFInverter
+		cliInit = &inverter.CLI{
+			App: inverter.App{
 				TmpDir:     tmpDir,
 				PDFIn:      *inputFile,
 				PDFOut:     *outputFile,
@@ -40,9 +40,9 @@ func runCLI(tmpDir string, pngtopdf string) {
 // runGUI runs the program with a QT front-end..
 func runGUI(tmpDir string, pngtopdf string) {
 
-	var guiInit pdfinverter.PDFInverter
-	guiInit = &pdfinverter.GUI{
-		App: pdfinverter.App{
+	var guiInit inverter.PDFInverter
+	guiInit = &inverter.GUI{
+		App: inverter.App{
 			TmpDir:     tmpDir,
 			PyPNGToPDF: pngtopdf,
 		},

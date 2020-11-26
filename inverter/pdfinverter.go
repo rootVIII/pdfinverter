@@ -1,4 +1,4 @@
-package pdfinverter
+package inverter
 
 // rootVIII 2020
 
