@@ -5,9 +5,10 @@ package inverter
 import (
 	"io/ioutil"
 	"strings"
+	"sync"
 )
 
-// CLI inherits all types and controls CLI application startup & processing.
+// CLI embeds App type and controls CLI application startup & processing.
 type CLI struct {
 	App
 }
@@ -17,20 +18,16 @@ func (cli *CLI) RunApp() {
 	cli.extractImage()
 	files, _ := ioutil.ReadDir(cli.TmpDir)
 	for _, batch := range chunk(files) {
-		ch := make(chan struct{})
-		routines := 0
+		var wg sync.WaitGroup
 		for _, fileName := range batch {
 			if !strings.Contains(fileName, "out-") {
 				continue
 			}
-			go cli.imageRoutine(fileName, ch)
+			wg.Add(1)
+			go cli.imageRoutine(fileName, &wg)
 			cli.imgCount++
-			routines++
 		}
-		for i := 0; i < routines; i++ {
-			<-ch
-		}
-		routines = 0
+		wg.Wait()
 	}
 
 	cli.writePDF()

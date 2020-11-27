@@ -9,13 +9,14 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/gen2brain/go-fitz"
 )
 
 // PDFInverter provides an interface to the CLI and GUI types.
 type PDFInverter interface {
-	imageRoutine(imgName string, fin chan<- struct{})
+	imageRoutine(imgName string, wg *sync.WaitGroup)
 	extractImage()
 	iterImage(imgName string)
 	writePDF()
@@ -30,9 +31,9 @@ type App struct {
 }
 
 // imageRoutine inverts the image within a goroutine.
-func (app *App) imageRoutine(imgName string, fin chan<- struct{}) {
+func (app *App) imageRoutine(imgName string, wg *sync.WaitGroup) {
+	defer wg.Done()
 	app.iterImage(imgName)
-	fin <- struct{}{}
 }
 
 // extractImage extracts PNG images from the input PDF using fitz.
@@ -63,12 +64,12 @@ func (app App) iterImage(imgName string) {
 	var currentPixel color.Color
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
-			red, green, blue, _ := currentPNG.At(x, y).RGBA()
-			r, g, b := uint8(red), uint8(green), uint8(blue)
+			red, green, blue, alpha := currentPNG.At(x, y).RGBA()
+			r, g, b, a := uint8(red), uint8(green), uint8(blue), uint8(alpha)
 			if r == 0x7F && g == 0x7F && b == 0x7F {
-				currentPixel = color.RGBA{0x1E, 0x1B, 0x24, 0xFF}
+				currentPixel = color.RGBA{0x1E, 0x1B, 0x24, a}
 			} else {
-				currentPixel = color.RGBA{0xFF - r, 0xFF - g, 0xFF - b, 0xFF}
+				currentPixel = color.RGBA{0xFF - r, 0xFF - g, 0xFF - b, a}
 			}
 			revised.Set(x, y, currentPixel)
 		}
