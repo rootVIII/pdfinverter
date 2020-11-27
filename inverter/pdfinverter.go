@@ -29,13 +29,13 @@ type App struct {
 	executor
 }
 
-// ImageRoutine inverts the image within a goroutine.
+// imageRoutine inverts the image within a goroutine.
 func (app *App) imageRoutine(imgName string, fin chan<- struct{}) {
 	app.iterImage(imgName)
 	fin <- struct{}{}
 }
 
-// ExtractImage extracts PNG images from the input PDF.
+// extractImage extracts PNG images from the input PDF using fitz.
 func (app App) extractImage() {
 	doc, err := fitz.New(app.PDFIn)
 	if err != nil {
@@ -53,7 +53,7 @@ func (app App) extractImage() {
 	}
 }
 
-// IterImage examines each row of pixels in a PNG while creating a new image.
+// iterImage examines each row of pixels in a PNG while creating a new image.
 func (app App) iterImage(imgName string) {
 	pathPNG := fmt.Sprintf("%s%s", app.TmpDir, imgName)
 	currentPNG := readPNG(pathPNG)
@@ -76,7 +76,7 @@ func (app App) iterImage(imgName string) {
 	writePNG(pathPNG, revised)
 }
 
-// WritePDF uses gofpdf to write images to the PDF file.
+// writePDF uses write images to the PDF file.
 func (app *App) writePDF() {
 	var paths []string
 	for index := 0; index < app.imgCount; index++ {
