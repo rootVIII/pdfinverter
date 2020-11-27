@@ -9,6 +9,7 @@ import (
 	"os/user"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/therecipe/qt/core"
@@ -16,7 +17,7 @@ import (
 	"github.com/therecipe/qt/widgets"
 )
 
-// GUI inherits all types and controls GUI application startup & processing.
+// GUI embeds App Type and controls GUI application startup & processing.
 type GUI struct {
 	App
 	window        *widgets.QMainWindow
@@ -55,7 +56,7 @@ func (g *GUI) openPDFOutput() {
 	}
 }
 
-// invert invokes the inherited methods to invert the PDF's colors.
+// invert signals to the background go-routine that a new job is ready to be processed.
 func (g *GUI) invert() {
 	if !g.runningJob {
 		g.PDFIn = g.inputTextBox.Text()
@@ -73,6 +74,7 @@ func (g *GUI) invert() {
 }
 
 // resetGUI sets the GUI fields and attributes back to default if a job is not running.
+// Otherwise the user is warned that a job is currently being processed.
 func (g *GUI) resetGUI() {
 	if !g.runningJob {
 		g.reset()
@@ -111,7 +113,7 @@ func (g GUI) shouldExecute() error {
 	return nil
 }
 
-// clearStatus is a QTimer function that periodically clears any status message.
+// clearStatus is a QTimer function that periodically clears any status message after 4 seconds.
 func (g *GUI) clearStatus() {
 	if g.statusCount > 4 {
 		g.statusLabel.SetText("")
@@ -165,20 +167,16 @@ func (g *GUI) RunApp() {
 				g.extractImage()
 				files, _ := ioutil.ReadDir(g.TmpDir)
 				for _, batch := range chunk(files) {
-					ch := make(chan struct{})
-					routines := 0
+					var wg sync.WaitGroup
 					for _, fileName := range batch {
 						if !strings.Contains(fileName, "out-") {
 							continue
 						}
-						go g.imageRoutine(fileName, ch)
+						wg.Add(1)
+						go g.imageRoutine(fileName, &wg)
 						g.imgCount++
-						routines++
 					}
-					for i := 0; i < routines; i++ {
-						<-ch
-					}
-					routines = 0
+					wg.Wait()
 				}
 
 				g.writePDF()
