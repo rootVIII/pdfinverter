@@ -50,7 +50,7 @@ func runGUI(tmpDir string, pngtopdf string) {
 	guiInit.RunApp()
 }
 
-// getPDFConv returns Python code used as a utility shell script.
+// getPDFConv returns Python code used as a utility shell script to write the final PDF.
 func getPDFConv() []byte {
 	script := []byte(`
 import Quartz as Quartz
