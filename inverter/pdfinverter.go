@@ -9,13 +9,14 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/gen2brain/go-fitz"
 )
 
 // PDFInverter provides an interface to the CLI and GUI types.
 type PDFInverter interface {
-	imageRoutine(imgName string, fin chan<- struct{})
+	imageRoutine(imgName string, wg *sync.WaitGroup)
 	extractImage()
 	iterImage(imgName string)
 	writePDF()
@@ -30,9 +31,9 @@ type App struct {
 }
 
 // imageRoutine inverts the image within a goroutine.
-func (app *App) imageRoutine(imgName string, fin chan<- struct{}) {
+func (app *App) imageRoutine(imgName string, wg *sync.WaitGroup) {
+	defer wg.Done()
 	app.iterImage(imgName)
-	fin <- struct{}{}
 }
 
 // extractImage extracts PNG images from the input PDF using fitz.
