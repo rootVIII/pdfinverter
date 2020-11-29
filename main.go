@@ -88,20 +88,18 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	tmpdir, err := ioutil.TempDir("", randPrefix.String())
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer os.RemoveAll(tmpdir)
-
 	randFileName, err := uuid.NewRandom()
 	if err != nil {
 		log.Fatal(err)
 	}
+	tmpdir, err := ioutil.TempDir("", randPrefix.String())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer os.RemoveAll(tmpdir)
 
 	pngtopdfTMP := filepath.Join(tmpdir, randFileName.String())
-
 	err = ioutil.WriteFile(pngtopdfTMP, getPDFConv(), 0700)
 	if err != nil {
 		panic(err)
