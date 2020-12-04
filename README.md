@@ -17,7 +17,7 @@ A 2-3 page PDF will invert very quickly. However a 400 page PDF may take 3-4 min
 This project should build on any platform with <a href="https://github.com/gographics/imagick">ImageMagick bindings</a> for Golang.
 
 
-A notarized installer .pkg is also available in the <a href="https://github.com/rootVIII/pdfinverter/releases">releases</a> page that will run on MacOS Big Sur.
+A notarized installer .pkg is also available in the <a href="https://github.com/rootVIII/pdfinverter/releases">releases</a> page that will run on MacOS Big Sur (V1.2 with Python dependency).
 
 
 The GUI is developed with Golang QT bindings:
