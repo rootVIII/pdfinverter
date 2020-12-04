@@ -1,21 +1,19 @@
 package main
 
 import (
-	"bytes"
 	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
-	"path/filepath"
 
 	"github.com/google/uuid"
 	"github.com/rootVIII/pdfinverter/inverter"
 )
 
 // runCLI is the entry point to the cmd-line version.
-func runCLI(tmpDir string, pngtopdf string) {
+func runCLI(tmpDir string) {
 	inputFile := flag.String("i", "", "input file path")
 	outputFile := flag.String("o", "", "output file path")
 	flag.Parse()
@@ -27,10 +25,9 @@ func runCLI(tmpDir string, pngtopdf string) {
 		var cliInit inverter.PDFInverter
 		cliInit = &inverter.CLI{
 			App: inverter.App{
-				TmpDir:     tmpDir,
-				PDFIn:      *inputFile,
-				PDFOut:     *outputFile,
-				PyPNGToPDF: pngtopdf,
+				TmpDir: tmpDir,
+				PDFIn:  *inputFile,
+				PDFOut: *outputFile,
 			},
 		}
 		cliInit.RunApp()
@@ -38,44 +35,14 @@ func runCLI(tmpDir string, pngtopdf string) {
 }
 
 // runGUI runs the program with a QT front-end..
-func runGUI(tmpDir string, pngtopdf string) {
-
+func runGUI(tmpDir string) {
 	var guiInit inverter.PDFInverter
 	guiInit = &inverter.GUI{
 		App: inverter.App{
-			TmpDir:     tmpDir,
-			PyPNGToPDF: pngtopdf,
+			TmpDir: tmpDir,
 		},
 	}
 	guiInit.RunApp()
-}
-
-// getPDFConv returns Python code used as a utility shell script to write the final PDF.
-func getPDFConv() []byte {
-	script := []byte(`
-import Quartz as Quartz
-from CoreFoundation import NSImage
-from os.path import realpath, basename
-from sys import argv
-
-
-def png_to_pdf(args):
-    image = NSImage.alloc().initWithContentsOfFile_(args[0])
-    page_init = Quartz.PDFPage.alloc().initWithImage_(image)
-    pdf = Quartz.PDFDocument.alloc().initWithData_(page_init.dataRepresentation())
-
-    for index, file_path in enumerate(args[1:]):
-        image = NSImage.alloc().initWithContentsOfFile_(file_path)
-        page_init = Quartz.PDFPage.alloc().initWithImage_(image)
-        pdf.insertPage_atIndex_(page_init, index + 1)
-
-    pdf.writeToFile_(realpath(__file__)[:-len(basename(__file__))] + 'aggr.pdf')
-
-
-if __name__ == '__main__':
-	png_to_pdf(argv[1:])
-`)
-	return bytes.ReplaceAll(script, []byte{0x09}, []byte{0x20, 0x20, 0x20, 0x20})
 }
 
 func main() {
@@ -88,10 +55,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	randFileName, err := uuid.NewRandom()
-	if err != nil {
-		log.Fatal(err)
-	}
+
 	tmpdir, err := ioutil.TempDir("", randPrefix.String())
 	if err != nil {
 		log.Fatal(err)
@@ -99,16 +63,10 @@ func main() {
 
 	defer os.RemoveAll(tmpdir)
 
-	pngtopdfTMP := filepath.Join(tmpdir, randFileName.String())
-	err = ioutil.WriteFile(pngtopdfTMP, getPDFConv(), 0700)
-	if err != nil {
-		panic(err)
-	}
-
 	tmpdir += "/"
 	if len(os.Args) > 1 {
-		runCLI(tmpdir, pngtopdfTMP)
+		runCLI(tmpdir)
 	} else {
-		runGUI(tmpdir, pngtopdfTMP)
+		runGUI(tmpdir)
 	}
 }
