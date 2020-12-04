@@ -20,16 +20,14 @@ import (
 // GUI embeds App Type and controls GUI application startup & processing.
 type GUI struct {
 	App
-	window        *widgets.QMainWindow
-	inputTextBox  *widgets.QLineEdit
-	outputTextBox *widgets.QLineEdit
-	statusLabel   *widgets.QLabel
-	userInfo      *user.User
-	workingTitle  string
-	workingCount  uint8
-	statusCount   uint8
-	haveStatus    bool
-	runningJob    bool
+	window                    *widgets.QMainWindow
+	inputTextBox              *widgets.QLineEdit
+	outputTextBox             *widgets.QLineEdit
+	statusLabel               *widgets.QLabel
+	userInfo                  *user.User
+	workingCount, statusCount uint8
+	haveStatus, runningJob    bool
+	workingTitle              string
 }
 
 // openPDFInput opens the PDF that needs to be inverted.
@@ -58,19 +56,14 @@ func (g *GUI) openPDFOutput() {
 
 // invert signals to the background go-routine that a new job is ready to be processed.
 func (g *GUI) invert() {
-	if !g.runningJob {
-		g.PDFIn = g.inputTextBox.Text()
-		g.PDFOut = g.outputTextBox.Text()
-		err := g.shouldExecute()
-		if err != nil {
-			g.statusLabel.SetText(err.Error())
-		} else {
-			g.runningJob = true
-		}
+	g.PDFIn = g.inputTextBox.Text()
+	g.PDFOut = g.outputTextBox.Text()
+	err := g.shouldExecute()
+	if err != nil {
+		g.statusLabel.SetText(err.Error())
 	} else {
-		g.statusLabel.SetText("Job is currently running... please wait")
+		g.runningJob = true
 	}
-
 }
 
 // resetGUI sets the GUI fields and attributes back to default if a job is not running.
@@ -85,17 +78,18 @@ func (g *GUI) resetGUI() {
 
 // reset the gui and variables to inital/empty values.
 func (g *GUI) reset() {
-	g.PDFIn = ""
-	g.PDFOut = ""
+	g.PDFIn, g.PDFOut = "", ""
 	g.inputTextBox.SetText(g.PDFIn)
 	g.outputTextBox.SetText(g.PDFOut)
-	g.imgCount = 0
+	g.imgCount, g.workingCount = 0, 0
 	g.runningJob = false
-	g.workingCount = 0
 	g.window.SetWindowTitle("")
 }
 
 func (g GUI) shouldExecute() error {
+	if g.runningJob {
+		return fmt.Errorf("Job is currently running")
+	}
 	if len(g.PDFIn) < 5 || strings.ToLower(g.PDFIn[len(g.PDFIn)-4:]) != ".pdf" {
 		return fmt.Errorf("input file must have .pdf extension and MIME type")
 	}
@@ -130,14 +124,11 @@ func (g *GUI) clearStatus() {
 // animates the title bar during processing.
 func (g *GUI) displayStatusRunning() {
 	if g.runningJob {
-		_, err := os.Stat(g.PDFOut)
-		if err != nil {
-			if g.workingCount > 10 {
-				g.workingCount = 0
-			} else {
-				g.window.SetWindowTitle(g.workingTitle[:g.workingCount])
-				g.workingCount++
-			}
+		if g.workingCount > 10 {
+			g.workingCount = 0
+		} else {
+			g.window.SetWindowTitle(g.workingTitle[:g.workingCount])
+			g.workingCount++
 		}
 	}
 }
@@ -183,6 +174,7 @@ func (g *GUI) RunApp() {
 				g.statusLabel.SetText(fmt.Sprintf("%s created", filepath.Base(g.PDFOut)))
 				g.reset()
 				g.removePNGs()
+				g.runningJob = false
 			}
 		}
 	}()

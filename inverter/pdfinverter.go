@@ -6,12 +6,11 @@ import (
 	"fmt"
 	"image"
 	"image/color"
-	"os"
 	"strconv"
-	"strings"
 	"sync"
 
 	"github.com/gen2brain/go-fitz"
+	"gopkg.in/gographics/imagick.v3/imagick"
 )
 
 // PDFInverter provides an interface to the CLI and GUI types.
@@ -25,9 +24,8 @@ type PDFInverter interface {
 
 // App controls CLI and GUI application startup & processing.
 type App struct {
-	TmpDir, PyPNGToPDF, PDFIn, PDFOut string
-	imgCount                          int
-	executor
+	TmpDir, PDFIn, PDFOut string
+	imgCount              int
 }
 
 // imageRoutine inverts the image within a goroutine.
@@ -79,7 +77,9 @@ func (app App) iterImage(imgName string) {
 
 // writePDF uses write images to the PDF file.
 func (app *App) writePDF() {
-	var paths []string
+
+	convertCMD := []string{"convert"}
+
 	for index := 0; index < app.imgCount; index++ {
 		var indexString string = strconv.Itoa(index)
 		var leadingZeroes string
@@ -87,12 +87,15 @@ func (app *App) writePDF() {
 			leadingZeroes += "0"
 		}
 		inputPath := fmt.Sprintf("%sout-%s%s.png", app.TmpDir, leadingZeroes, indexString)
-		paths = append(paths, inputPath)
+		convertCMD = append(convertCMD, inputPath)
 	}
-	cmd := fmt.Sprintf("/usr/bin/python %s %s", app.PyPNGToPDF, strings.Join(paths, " "))
-	app.setCommand(cmd)
-	app.runCommand()
-	err := os.Rename(app.TmpDir+"aggr.pdf", app.PDFOut)
+
+	convertCMD = append(convertCMD, "-quality", "100", app.PDFOut)
+
+	imagick.Initialize()
+	defer imagick.Terminate()
+
+	_, err := imagick.ConvertImageCommand(convertCMD)
 	if err != nil {
 		panic(err)
 	}
