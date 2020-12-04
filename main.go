@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"os/exec"
 
 	"github.com/google/uuid"
 	"github.com/rootVIII/pdfinverter/inverter"
@@ -46,16 +45,10 @@ func runGUI(tmpDir string) {
 }
 
 func main() {
-	// Use system python2.7 until Apple includes NSImage/Quartz with Python3.
-	if _, err := exec.LookPath("python"); err != nil {
-		log.Fatal(fmt.Errorf("Failed to find system Python in path: %v", err))
-	}
-
 	randPrefix, err := uuid.NewRandom()
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	tmpdir, err := ioutil.TempDir("", randPrefix.String())
 	if err != nil {
 		log.Fatal(err)
