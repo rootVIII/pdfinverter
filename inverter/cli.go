@@ -8,7 +8,7 @@ import (
 	"sync"
 )
 
-// CLI embeds App type and controls CLI application startup & processing.
+// CLI embeds/inherits App type and controls CLI application startup & processing.
 type CLI struct {
 	App
 }
