@@ -14,10 +14,8 @@ Unfortunately page links are not preserved, but this program will darken PDFs ma
 A 2-3 page PDF will invert very quickly. However a 400 page PDF may take 3-4 minutes.
 
 
-This project should build on any platform with <a href="https://github.com/gographics/imagick">ImageMagick bindings</a> for Golang.
+This project should build on any platform with <a href="https://github.com/gographics/imagick">ImageMagick bindings</a> for Golang. <code>export CGO_CFLAGS_ALLOW='-Xpreprocessor'</code> may need to be executed to run/build.
 
-
-A notarized installer .pkg is also available in the <a href="https://github.com/rootVIII/pdfinverter/releases">releases</a> page that will run on MacOS Big Sur (V1.2 with Python dependency).
 
 
 The GUI is developed with Golang QT bindings:
