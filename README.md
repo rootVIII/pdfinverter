@@ -22,10 +22,13 @@ The GUI is developed with Golang QT bindings:
 <img src="https://user-images.githubusercontent.com/30498791/166346008-b40e110c-9fb9-4ca1-9434-0e1f5a330171.png" alt="example2">
 
 
-###### go get and run/build yourself:
+###### Get the project and build:
 <pre>
   <code>
-go get github.com/rootVIII/pdfinverter
+git clone https://github.com/rootVIII/pdfinverter.git
+cd &lt;project root&gt;
+go build -o bin/pdfinverter
+./bin/pdfinverter 
   </code>
 </pre>
 
