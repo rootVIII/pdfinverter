@@ -8,7 +8,7 @@ import (
 	"os"
 
 	"github.com/google/uuid"
-	"github.com/rootVIII/pdfinverter/inverter"
+	"pdfinverter/inverter"
 )
 
 // runCLI is the entry point to the cmd-line version.
