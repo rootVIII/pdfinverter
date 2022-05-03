@@ -3,9 +3,9 @@
 PDFInverter (GUI and CLI) will create a new PDF at the specified
 location from a source PDF. All colors will be inverted (original shown on left):
 
-<img src="https://github.com/rootVIII/pdfinverter/blob/master/screenshots/inverted1.png" alt="example1"><br>
-<img src="https://github.com/rootVIII/pdfinverter/blob/master/screenshots/inverted2.png" alt="example2"><br>
-<img src="https://github.com/rootVIII/pdfinverter/blob/master/screenshots/inverted3.png" alt="example3"><br>
+<img src="https://user-images.githubusercontent.com/30498791/166346009-2b635dda-3c79-4557-9a7b-20f5bb64f075.png" alt="example1"><br>
+<img src="https://user-images.githubusercontent.com/30498791/166346010-9d05b846-c924-4012-9693-928eafbc2a83.png" alt="example2"><br>
+<img src="https://user-images.githubusercontent.com/30498791/166346011-c470d255-602c-4379-a8bd-bc0e8a2085ed.png" alt="example3"><br>
 
 
 Unfortunately page links are not preserved, but this program will darken PDFs making them suitable for night reading.
@@ -19,7 +19,7 @@ This project should build on any platform with <a href="https://github.com/gogra
 
 
 The GUI is developed with Golang QT bindings:
-<img src="https://github.com/rootVIII/pdfinverter/blob/master/screenshots/gui.png" alt="example2">
+<img src="https://user-images.githubusercontent.com/30498791/166346008-b40e110c-9fb9-4ca1-9434-0e1f5a330171.png" alt="example2">
 
 
 ###### go get and run/build yourself:
